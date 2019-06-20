@@ -14,7 +14,7 @@ class IndexGenerator {
 		$includes = "";	
 		foreach($Alltables as $table) {
 			$includes .="
-	include_once __DIR__.'/controllers/".$table->className."Controller.php';";
+	include_once __DIR__.'/api/controllers/".$table->className."Controller.php';";
 		}
 		return $includes;
 	}

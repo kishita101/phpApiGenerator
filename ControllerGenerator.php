@@ -20,6 +20,7 @@ class ControllerGenerator {
 "<?php
 	include_once __DIR__.'/../objects/{$filename}.php';
 	include_once __DIR__.'/../config/Database.php';
+	include_once __DIR__.'/../util/util.php';
 	
 	class {$filename}Controller {
 		
@@ -32,13 +33,13 @@ class ControllerGenerator {
 				
 		foreach($variables as $variable){
 			$control .= "
-				\$".$object_name."->set".ucfirst($variable)."($$variable);";
+				\$".$object_name."->set".ucfirst($variable)."( isset($$variable) ? $$variable : null );";
 		}
 	
 		$control .= 
 "
 			if($".$object_name."->create(\$db)){				
-				Util::echoResp($$object_name);
+				Util::echoResp($".$object_name."->readById($".$object_name."->id));
 			}else{
 				Util::echoErrResp(99);
 			}
@@ -54,13 +55,13 @@ class ControllerGenerator {
 							
 	foreach($variables as $variable){
 		$control .= "
-			\$".$object_name."->set".ucfirst($variable)."($$variable);";
+			\$".$object_name."->set".ucfirst($variable)."( isset($$variable) ? $$variable : null );";
 	}
 
 		$control .=	"
 			\$count = $".$object_name."->update(\$db); 
 			if(\$count > 0){
-				Util::echoResp(\$count);
+				Util::echoResp($".$object_name."->readById($".$object_name."->id));
 				}else{
 				Util::echoErrResp(99);
 			}

@@ -16,8 +16,13 @@ class ObjectGenerator {
 		$object_name = lcfirst($filename);
 		$table_name = $table->tableName;
 		$variables = explode(",",$table->variables);
-		$commaSeparated = join(', ',$variables);
-		$commaSeparated = ltrim($commaSeparated,'id,');
+		$commaSeparated = "";
+		foreach($variables as $v){
+			if($v != 'id'){
+			$commaSeparated .= $v.','; 
+			}
+		}
+		$commaSeparated = rtrim($commaSeparated,',');
 		$colonedVars = "";
 
 		$data = 
@@ -30,7 +35,7 @@ class ObjectGenerator {
 
 		foreach($variables as $variable){
 			$data .= "
-			protected $$variable;";
+			public $$variable;";
 			if($variable != 'id'){
 			$colonedVars .=":$variable, ";
 			}
@@ -141,12 +146,6 @@ class ObjectGenerator {
 			\$result = \$stmt->rowCount();
 			return \$result;
 		}
-		";
-	$data .= "
-		public function validate(){
-			return true;
-		}
-
 		";
 
 		

@@ -20,24 +20,30 @@
 		die();
 	}
 	$pathApi = $pathBase.'/api';
-	mkdir($pathApi, 0775, true);
+	if (!file_exists($pathApi))
+		mkdir($pathApi, 0775, true);
 	
 	$pathConfig = $pathApi.'/config';	
 	$pathControllers = $pathApi.'/controllers';	
 	$pathKotlin = $pathApi.'/kotlin';	
 	$pathObjects = $pathApi.'/objects';	
 	$pathUtil = $pathApi.'/util';	
-	
-	mkdir($pathConfig, 0775, true);
-	mkdir($pathControllers, 0775, true);
-	mkdir($pathKotlin, 0775, true);
-	mkdir($pathObjects, 0775, true);
-	mkdir($pathUtil, 0775, true);
+	if (!file_exists($pathConfig))
+		mkdir($pathConfig, 0775, true);
+	if (!file_exists($pathControllers))
+		mkdir($pathControllers, 0775, true);
+	if (!file_exists($pathKotlin))
+		mkdir($pathKotlin, 0775, true);
+	if (!file_exists($pathObjects))
+		mkdir($pathObjects, 0775, true);
+	if (!file_exists($pathUtil))
+		mkdir($pathUtil, 0775, true);
 	
 	$tableDetails = getTableDetails();
 	generateConfig();
 	generateUtil();
 	generateComposerJson();
+	generateGitIgnore();
 
 	$objGen = new ObjectGenerator();
 	$controlGen = new ControllerGenerator();
@@ -53,7 +59,7 @@
 	}
 
 	$iGen = new IndexGenerator();
-	$iGen->setTableDetails($pathApi, $tableDetails);
+	$iGen->setTableDetails($pathBase, $tableDetails);
 	$iGen->generateFile();
 
 	$iGen = new KotlinGenerator();
@@ -112,8 +118,8 @@
 		global $username;
 		global $password;
 		$file = fopen($pathConfig."/database.php", "w") or die("Unable to open file!");
-		$data = "
-<?php
+		$data = 
+"<?php
 		class Database{
 		
 		// specify your own database credentials
@@ -150,8 +156,8 @@
 	function generateUtil(){
 		global $pathUtil;
 		$file = fopen($pathUtil."/util.php", "w") or die("Unable to open file!");
-		$data = "
-<?php
+		$data = 
+"<?php
 		
 		class Util {
 		
@@ -176,8 +182,8 @@
 	}
 
 	function generateComposerJson(){
-		global $pathApi;
-		$file = fopen($pathApi."/composer.json", "w") or die("Unable to open file!");
+		global $pathBase;
+		$file = fopen($pathBase."/composer.json", "w") or die("Unable to open file!");
 		$data = "
 {
     \"require\": {
@@ -189,6 +195,15 @@
 		fwrite($file, $data);
 		fclose($file);
 		echo "<br/>composer.json generated Successfully!";
+	}
+
+	function generateGitIgnore(){
+		global $pathBase;
+		$file = fopen($pathBase."/.gitignore", "w") or die("Unable to open file!");
+		$data = "vendor";	
+		fwrite($file, $data);
+		fclose($file);
+		echo "<br/>.gitignore generated Successfully!";
 	}
 
 	function tableNameToFileName($string, $capitalizeFirstCharacter = false) 
